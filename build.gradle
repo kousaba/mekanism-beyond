@@ -1,0 +1,46 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '1.0.14'
+}
+
+group = 'com.github.kousaba'
+version = '1.0.0'
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+neoForge {
+    // 【重要】Mekanism 10.7.15.81 に合わせてバージョンを上げます
+    version = "21.1.200"
+
+    runs {
+        client {
+            client()
+        }
+    }
+
+    mods {
+        // ここを neoforge.mods.toml の modId と一致させます
+        mekanism_extended {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = "https://maven.neoforged.net/releases/" }
+}
+
+dependencies {
+    // あなたが確認した 1.21.1 用の Mekanism
+    implementation "maven.modrinth:mekanism:10.7.15.81"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}

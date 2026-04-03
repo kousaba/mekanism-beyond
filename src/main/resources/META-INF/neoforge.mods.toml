@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+    modId="mekanism_extended"
+    version="1.0.0"
+    displayName="Mekanism Extended"
+    authors="kousaba"
+    description="SF Addon for Mekanism"
+
+[[dependencies.mekanism_extended]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mekanism_extended]]
+    modId="mekanism"
+    type="required"
+    versionRange="[10.7,)"
+    ordering="AFTER"
+    side="BOTH"
