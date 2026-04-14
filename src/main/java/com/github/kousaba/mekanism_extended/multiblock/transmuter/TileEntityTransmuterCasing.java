@@ -1,5 +1,6 @@
 package com.github.kousaba.mekanism_extended.multiblock.transmuter;
 
+import com.github.kousaba.mekanism_extended.MekanismExtended;
 import com.github.kousaba.mekanism_extended.registration.ModBlocks;
 import com.github.kousaba.mekanism_extended.registration.ModTileEntities;
 import mekanism.api.IConfigurable;
@@ -37,23 +38,8 @@ public class TileEntityTransmuterCasing extends TileEntityMultiblock<TransmuterM
     }
 
     @Override
-    public void onLoad() {
-        super.onLoad(); // これが重要
-        if (!isRemote()) {
-            // サーバー側で動いている場合、チャットにメッセージを出す
-            Player player = getLevel().getNearestPlayer(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), 10, false);
-            if (player != null) {
-                player.sendSystemMessage(Component.literal("§a[Server] onLoad実行: Managerを呼び出します"));
-            }
-
-            // 強制的にマネージャーにアクセスして形成チェックを依頼
-            getManager();
-        }
-    }
-
-    @Override
     public MultiblockManager<TransmuterMultiblockData> getManager(){
         System.out.println("DEBUG: getManager() has been accessed!");
-        return TransmuterManager.INSTANCE;
+        return MekanismExtended.transmuterManager;
     }
 }

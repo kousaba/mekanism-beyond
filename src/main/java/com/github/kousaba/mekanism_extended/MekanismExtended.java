@@ -1,13 +1,15 @@
 package com.github.kousaba.mekanism_extended;
 
 import com.github.kousaba.mekanism_extended.datagen.DataGenerators;
-import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterManager;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterMultiblockData;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterValidator;
 import com.github.kousaba.mekanism_extended.registration.ModBlocks;
 import com.github.kousaba.mekanism_extended.registration.ModTileEntities;
 import com.mojang.logging.LogUtils;
 import mekanism.api.MekanismAPI;
 import mekanism.api.chemical.Chemical;
 import mekanism.common.inventory.container.tile.MekanismTileContainer;
+import mekanism.common.lib.multiblock.MultiblockCache;
 import mekanism.common.lib.multiblock.MultiblockManager;
 import mekanism.common.util.WorldUtils;
 import net.minecraft.client.Minecraft;
@@ -41,12 +43,9 @@ import org.slf4j.Logger;
 public class MekanismExtended {
     public static final String MODID = "mekanism_extended";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MODID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
-    public static final DeferredRegister<Chemical> CHEMICALS = DeferredRegister.create(MekanismAPI.CHEMICAL_REGISTRY, MODID);
     public static final DeferredItem<Item> NANO_ALLOY = ITEMS.registerSimpleItem("nano_alloy", new Item.Properties());
+    public static final MultiblockManager<TransmuterMultiblockData> transmuterManager = new MultiblockManager("transmuter", MultiblockCache::new, TransmuterValidator::new);
     // --- ブロック登録 (シンボルを解決) ---
 
 
@@ -56,7 +55,6 @@ public class MekanismExtended {
         ModTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(ClientEvent::init);
-        System.out.println("Force loading Manager: " + TransmuterManager.INSTANCE);
         LOGGER.info("Mekansim Extended loaded!");
     }
 
