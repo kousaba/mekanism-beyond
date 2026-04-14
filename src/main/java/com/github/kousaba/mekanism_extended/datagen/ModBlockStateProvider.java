@@ -12,14 +12,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        // Casing: 全ての面(cube_all)に transmutation_casing.png を貼る
         simpleBlock(ModBlocks.TRANSMUTER_CASING.get());
-
-        // Port: 全ての面に transmutation_port.png を貼る
         simpleBlock(ModBlocks.TRANSMUTER_PORT.get());
-
-        // Glass: 透明ブロックの設定
-        simpleBlock(ModBlocks.TRANSMUTER_GLASS.get(),
-            models().cubeAll("transmutation_glass", modLoc("block/transmutation_glass")).renderType("cutout"));
     }
 }

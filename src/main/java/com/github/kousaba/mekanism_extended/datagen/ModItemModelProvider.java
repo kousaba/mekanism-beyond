@@ -13,8 +13,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         basicItem(MekanismExtended.NANO_ALLOY.get());
-        withExistingParent("transmutation_casing", modLoc("block/transmutation_casing"));
-        withExistingParent("transmutation_port", modLoc("block/transmutation_port"));
-        withExistingParent("transmutation_glass", modLoc("block/transmutation_glass"));
+        withExistingParent("transmutation_casing", modLoc("block/transmuter_casing"));
+        withExistingParent("transmutation_port", modLoc("block/transmuter_port"));
     }
 }

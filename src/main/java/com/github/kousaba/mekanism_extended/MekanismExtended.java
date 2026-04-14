@@ -1,9 +1,7 @@
 package com.github.kousaba.mekanism_extended;
 
 import com.github.kousaba.mekanism_extended.datagen.DataGenerators;
-import com.github.kousaba.mekanism_extended.multiblock.TransmuterCache;
-import com.github.kousaba.mekanism_extended.multiblock.TransmuterMultiblockData;
-import com.github.kousaba.mekanism_extended.multiblock.TransmuterValidator;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterManager;
 import com.github.kousaba.mekanism_extended.registration.ModBlocks;
 import com.github.kousaba.mekanism_extended.registration.ModTileEntities;
 import com.mojang.logging.LogUtils;
@@ -50,18 +48,15 @@ public class MekanismExtended {
     public static final DeferredRegister<Chemical> CHEMICALS = DeferredRegister.create(MekanismAPI.CHEMICAL_REGISTRY, MODID);
     public static final DeferredItem<Item> NANO_ALLOY = ITEMS.registerSimpleItem("nano_alloy", new Item.Properties());
     // --- ブロック登録 (シンボルを解決) ---
-    public static final MultiblockManager<TransmuterMultiblockData> TRANSMUTER_MANAGER =
-        new MultiblockManager<>("transmuter", TransmuterCache::new, TransmuterValidator::new);
-
 
 
     public MekanismExtended(IEventBus modEventBus, ModContainer modContainer) {
         ITEMS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
-        ModBlocks.ITEMS.register(modEventBus);
-        ModTileEntities.TILE_ENTITIES.register(modEventBus);
+        ModTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(ClientEvent::init);
+        System.out.println("Force loading Manager: " + TransmuterManager.INSTANCE);
         LOGGER.info("Mekansim Extended loaded!");
     }
 

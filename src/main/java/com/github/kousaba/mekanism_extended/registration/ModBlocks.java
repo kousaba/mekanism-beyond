@@ -1,34 +1,44 @@
 package com.github.kousaba.mekanism_extended.registration;
 
 import com.github.kousaba.mekanism_extended.MekanismExtended;
-import com.github.kousaba.mekanism_extended.multiblock.*;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.BlockTransmuterCasing;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.TileEntityTransmuterCasing;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.TileEntityTransmuterPort;
+import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterBlockTypes;
+import mekanism.common.block.attribute.Attributes;
+import mekanism.common.block.interfaces.IHasDescription;
+import mekanism.common.item.block.ItemBlockTooltip;
+import mekanism.common.registration.impl.BlockDeferredRegister;
+import mekanism.common.registration.impl.BlockRegistryObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.TintedGlassBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.function.Supplier;
+
 public class ModBlocks {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MekanismExtended.MODID);
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MekanismExtended.MODID);
-    public static final DeferredBlock<TransmuterBlock<TileEntityTransmuterCasing>> TRANSMUTER_CASING = BLOCKS.register("transmutation_casing",
-        () -> new TransmuterBlock<>(Block.Properties.of().strength(5.0F, 12.0F).requiresCorrectToolForDrops(),
-            ModTileEntities.TRANSMUTER_CASING)); // ここで ModTileEntities を直接渡す
-    public static final DeferredItem<BlockItem> TRANSMUTER_CASING_ITEM = ITEMS.register("transmutation_casing",
-        () -> new BlockItem(TRANSMUTER_CASING.get(), new Item.Properties()));
-    public static final DeferredBlock<TransmuterBlock<TileEntityTransmuterPort>> TRANSMUTER_PORT = BLOCKS.register("transmutation_port",
-        () -> new TransmuterBlock<>(Block.Properties.of().strength(5.0F, 12.0F).requiresCorrectToolForDrops(),
-            ModTileEntities.TRANSMUTER_PORT));
-    public static final DeferredItem<BlockItem> TRANSMUTER_PORT_ITEM = ITEMS.register("transmutation_port",
-        () -> new BlockItem(TRANSMUTER_PORT.get(), new Item.Properties()));
-    public static final DeferredBlock<TransmuterGlassBlock<TileEntityTransmuterGlass>> TRANSMUTER_GLASS = BLOCKS.register("transmutation_glass",
-        () -> new TransmuterGlassBlock<>(Block.Properties.of(),
-            ModTileEntities.TRANSMUTER_GLASS));
-        public static final DeferredItem<BlockItem> TRANSMUTER_GLASS_ITEM = ITEMS.register("transmutation_glass",
-            () -> new BlockItem(TRANSMUTER_GLASS.get(), new Item.Properties()));
+    public static final BlockDeferredRegister BLOCKS = new BlockDeferredRegister(MekanismExtended.MODID);
+    private static <BLOCK extends Block & IHasDescription> BlockRegistryObject<BLOCK, ItemBlockTooltip<BLOCK>> registerBlock(String name, Supplier<? extends BLOCK> blockSupplier) {
+        return BLOCKS.register(name, blockSupplier, ItemBlockTooltip::new);
+    }public static final BlockRegistryObject<BlockTransmuterCasing<TileEntityTransmuterCasing>, ItemBlockTooltip<BlockTransmuterCasing<TileEntityTransmuterCasing>>> TRANSMUTER_CASING =
+            BLOCKS.register("transmuter_casing",
+                () -> new BlockTransmuterCasing<>(TransmuterBlockTypes.TRANSMUTER_CASING),
+                ItemBlockTooltip::new);
+
+    // Portの登録
+    // ここで型引数を <TileEntityTransmuterPort> にすることでエラーが解消されます
+    public static final BlockRegistryObject<BlockTransmuterCasing<TileEntityTransmuterPort>, ItemBlockTooltip<BlockTransmuterCasing<TileEntityTransmuterPort>>> TRANSMUTER_PORT =
+            BLOCKS.register("transmuter_port",
+                () -> new BlockTransmuterCasing<>(TransmuterBlockTypes.TRANSMUTER_PORT),
+                ItemBlockTooltip::new);
 }
