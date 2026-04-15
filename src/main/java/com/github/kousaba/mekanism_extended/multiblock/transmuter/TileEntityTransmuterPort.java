@@ -14,12 +14,12 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 
 import java.util.List;
 
-public class TileEntityTransmuterPort extends TileEntityTransmuterCasing{
-    public TileEntityTransmuterPort(BlockPos pos, BlockState state){
+public class TileEntityTransmuterPort extends TileEntityTransmuterCasing {
+    public TileEntityTransmuterPort(BlockPos pos, BlockState state) {
         super(ModBlocks.TRANSMUTER_PORT, pos, state);
     }
 
-    public void addGasTargetCapability(List<MultiblockData.CapabilityOutputTarget<IChemicalHandler>> targets, Direction side){
+    public void addGasTargetCapability(List<MultiblockData.CapabilityOutputTarget<IChemicalHandler>> targets, Direction side) {
         if (getLevel() instanceof ServerLevel serverLevel) {
             // 隣接座標
             BlockPos neighborPos = getBlockPos().relative(side);
@@ -28,13 +28,13 @@ public class TileEntityTransmuterPort extends TileEntityTransmuterCasing{
 
             // BlockCapabilityCache を作成してターゲットリストに追加
             targets.add(new MultiblockData.CapabilityOutputTarget<>(
-                BlockCapabilityCache.create(
-                    Capabilities.CHEMICAL.block(), // IChemicalHandlerのCapability
-                    serverLevel,
-                    neighborPos,
-                    opposite
-                ),
-                () -> !isRemoved() // 自分が存在している間は有効
+                    BlockCapabilityCache.create(
+                            Capabilities.CHEMICAL.block(), // IChemicalHandlerのCapability
+                            serverLevel,
+                            neighborPos,
+                            opposite
+                    ),
+                    () -> !isRemoved() // 自分が存在している間は有効
             ));
         }
     }

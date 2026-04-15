@@ -17,10 +17,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class TileEntityTransmuterCasing extends TileEntityMultiblock<TransmuterMultiblockData> {
-    public TileEntityTransmuterCasing(BlockPos pos, BlockState state){
+    public TileEntityTransmuterCasing(BlockPos pos, BlockState state) {
         super(ModBlocks.TRANSMUTER_CASING, pos, state);
     }
-    public TileEntityTransmuterCasing(Holder<Block> blockProvider, BlockPos pos, BlockState state){
+
+    public TileEntityTransmuterCasing(Holder<Block> blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
     }
 
@@ -31,15 +32,13 @@ public class TileEntityTransmuterCasing extends TileEntityMultiblock<TransmuterM
     }
 
     @Override
-    public void onAdded(){
-        System.out.println("--- onAdded 開始: " + this.getBlockPos().toShortString() + " ---");
+    public void onAdded() {
         super.onAdded();
-        System.out.println("--- onAdded 終了 ---");
     }
 
+
     @Override
-    public MultiblockManager<TransmuterMultiblockData> getManager(){
-        System.out.println("DEBUG: getManager() has been accessed!");
+    public MultiblockManager<TransmuterMultiblockData> getManager() {
         return MekanismExtended.transmuterManager;
     }
 }

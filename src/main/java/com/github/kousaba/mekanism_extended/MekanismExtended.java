@@ -55,6 +55,7 @@ public class MekanismExtended {
         ModTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(ClientEvent::init);
+        System.out.println("Force Initializing Manager: " + transmuterManager);
         LOGGER.info("Mekansim Extended loaded!");
     }
 

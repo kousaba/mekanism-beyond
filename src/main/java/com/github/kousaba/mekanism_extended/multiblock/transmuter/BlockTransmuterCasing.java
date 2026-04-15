@@ -1,5 +1,6 @@
 package com.github.kousaba.mekanism_extended.multiblock.transmuter;
 
+import com.github.kousaba.mekanism_extended.MekanismExtended;
 import com.github.kousaba.mekanism_extended.registration.ModTileEntities;
 import mekanism.api.text.ILangEntry;
 import mekanism.common.block.BlockMekanism;
@@ -10,6 +11,7 @@ import mekanism.common.content.blocktype.BlockTypeTile;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
+
+
 public class BlockTransmuterCasing<TILE extends TileEntityTransmuterCasing>
         extends BlockTile<TILE, BlockTypeTile<TILE>> implements IHasDescription {
 
@@ -38,6 +42,7 @@ public class BlockTransmuterCasing<TILE extends TileEntityTransmuterCasing>
             player.sendSystemMessage(Component.literal("Pos " + pos.toShortString() + " に設置されました！"));
         }
     }
+
 
     @NotNull
     @Override

@@ -78,7 +78,8 @@ public class TransmuterMultiblockData extends MultiblockData {
                 chemical -> chemical.is(ModChemicals.URANIUM_WATER.get()), this));
         energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
     }
-    public TransmuterMultiblockData(){
+
+    public TransmuterMultiblockData() {
         super(null);
         System.out.println("transmutermultiblockdata");
 
@@ -90,7 +91,7 @@ public class TransmuterMultiblockData extends MultiblockData {
     }
 
     @Override
-    public void onCreated(Level world){
+    public void onCreated(Level world) {
         super.onCreated(world);
         scanInternalStructures(world);
         int area = length() * width();
@@ -99,54 +100,54 @@ public class TransmuterMultiblockData extends MultiblockData {
     }
 
     private void scanInternalStructures(Level world) {
-    electromagneticCoilCount = 0;
-    hasSuperchargedCoil = false;
-    boolean airGapValid = true;
+        electromagneticCoilCount = 0;
+        hasSuperchargedCoil = false;
+        boolean airGapValid = true;
 
-    // 内部の高さ範囲
-    int minH = getMinPos().getY() + 1;
-    int maxH = getMaxPos().getY() - 1;
+        // 内部の高さ範囲
+        int minH = getMinPos().getY() + 1;
+        int maxH = getMaxPos().getY() - 1;
 
-    // 中央の計算 (空気層3層の中心)
-    int midY = (minH + maxH) / 2;
+        // 中央の計算 (空気層3層の中心)
+        int midY = (minH + maxH) / 2;
 
-    // 中心座標 (X, Z)
-    int centerX = (getMinPos().getX() + getMaxPos().getX()) / 2;
-    int centerZ = (getMinPos().getZ() + getMaxPos().getZ()) / 2;
+        // 中心座標 (X, Z)
+        int centerX = (getMinPos().getX() + getMaxPos().getX()) / 2;
+        int centerZ = (getMinPos().getZ() + getMaxPos().getZ()) / 2;
 
-    for (int y = minH; y <= maxH; y++) {
-        for (int x = getMinPos().getX() + 1; x <= getMaxPos().getX() - 1; x++) {
-            for (int z = getMinPos().getZ() + 1; z <= getMaxPos().getZ() - 1; z++) {
-                BlockPos pos = new BlockPos(x, y, z);
-                BlockState state = world.getBlockState(pos);
+        for (int y = minH; y <= maxH; y++) {
+            for (int x = getMinPos().getX() + 1; x <= getMaxPos().getX() - 1; x++) {
+                for (int z = getMinPos().getZ() + 1; z <= getMaxPos().getZ() - 1; z++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    BlockState state = world.getBlockState(pos);
 
-                // --- 1. 中央の空気層3層 (midY-1, midY, midY+1) の判定 ---
-                if (y >= midY - 1 && y <= midY + 1) {
-                    if (!state.isAir()) {
-                        airGapValid = false; // 空気が必須の場所にブロックがあった
+                    // --- 1. 中央の空気層3層 (midY-1, midY, midY+1) の判定 ---
+                    if (y >= midY - 1 && y <= midY + 1) {
+                        if (!state.isAir()) {
+                            airGapValid = false; // 空気が必須の場所にブロックがあった
+                        }
+                        continue; // 空気層の処理はここまで
                     }
-                    continue; // 空気層の処理はここまで
-                }
 
-                // --- 2. 上下コイル層の判定 ---
-                // 中心軸 (X, Zの中心)
-                if (x == centerX && z == centerZ) {
-                    if (state.is(MekanismBlocks.SUPERCHARGED_COIL)) {
-                        hasSuperchargedCoil = true; // 1つでもあればOK (上下に必要なら条件を追加可能)
+                    // --- 2. 上下コイル層の判定 ---
+                    // 中心軸 (X, Zの中心)
+                    if (x == centerX && z == centerZ) {
+                        if (state.is(MekanismBlocks.SUPERCHARGED_COIL)) {
+                            hasSuperchargedCoil = true; // 1つでもあればOK (上下に必要なら条件を追加可能)
+                        }
                     }
-                }
-                // 中心軸の周囲 3x3
-                else if (Math.abs(x - centerX) <= 1 && Math.abs(z - centerZ) <= 1) {
-                    if (state.is(GeneratorsBlocks.ELECTROMAGNETIC_COIL)) {
-                        electromagneticCoilCount++;
+                    // 中心軸の周囲 3x3
+                    else if (Math.abs(x - centerX) <= 1 && Math.abs(z - centerZ) <= 1) {
+                        if (state.is(GeneratorsBlocks.ELECTROMAGNETIC_COIL)) {
+                            electromagneticCoilCount++;
+                        }
                     }
                 }
             }
         }
-    }
 
-    // 最終的な有効性判定: 空気層が正しく、かつ Supercharged Coil が存在すること
-    this.active = airGapValid && hasSuperchargedCoil;
+        // 最終的な有効性判定: 空気層が正しく、かつ Supercharged Coil が存在すること
+        this.active = airGapValid && hasSuperchargedCoil;
     }
 
     @Override
@@ -176,24 +177,24 @@ public class TransmuterMultiblockData extends MultiblockData {
         }
 
         if (!chemicalOutputTargets.isEmpty() && !uraniumWaterTank.isEmpty()) {
-    ChemicalUtil.emit(getActiveOutputs(chemicalOutputTargets), uraniumWaterTank);
-}
+            ChemicalUtil.emit(getActiveOutputs(chemicalOutputTargets), uraniumWaterTank);
+        }
 
         return needsPacket;
     }
 
     @Override
-    protected void updateEjectors(Level world){
+    protected void updateEjectors(Level world) {
         chemicalOutputTargets.clear();
-        for (IValveHandler.ValveData valve : valves){
+        for (IValveHandler.ValveData valve : valves) {
             TileEntityTransmuterPort tile = WorldUtils.getTileEntity(TileEntityTransmuterPort.class, world, valve.location);
-            if(tile != null){
+            if (tile != null) {
                 tile.addGasTargetCapability(chemicalOutputTargets, valve.side);
             }
         }
     }
 
-    public void setCoilData(boolean hasSuper, int count){
+    public void setCoilData(boolean hasSuper, int count) {
         this.hasSuperchargedCoil = hasSuper;
         this.electromagneticCoilCount = count;
         int area = length() * width();
@@ -201,7 +202,7 @@ public class TransmuterMultiblockData extends MultiblockData {
         currentProductionRate = (long) (BASE_PRODUCTION_AMOUNT * (1 + electromagneticCoilCount * COIL_SPEED_BONUS));
     }
 
-    public boolean hasSuperchargedCoil(){
+    public boolean hasSuperchargedCoil() {
         return this.hasSuperchargedCoil;
     }
 

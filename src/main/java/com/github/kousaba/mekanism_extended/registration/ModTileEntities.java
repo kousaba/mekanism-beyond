@@ -7,6 +7,7 @@ import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registration.impl.TileEntityTypeDeferredRegister;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import mekanism.common.registries.MekanismBlocks;
+import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.generators.common.registries.GeneratorsBlocks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -15,12 +16,16 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 public class ModTileEntities {
     public static final TileEntityTypeDeferredRegister TILE_ENTITY_TYPES = new TileEntityTypeDeferredRegister(MekanismExtended.MODID);
     public static final TileEntityTypeRegistryObject<TileEntityTransmuterCasing> TRANSMUTER_CASING =
-        TILE_ENTITY_TYPES.mekBuilder(ModBlocks.TRANSMUTER_CASING, TileEntityTransmuterCasing::new)
-            .withSimple(Capabilities.CONFIGURABLE) // ボイラーと同様に追加
-            .build();
+            TILE_ENTITY_TYPES.mekBuilder(ModBlocks.TRANSMUTER_CASING, TileEntityTransmuterCasing::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
+                    .withSimple(Capabilities.CONFIGURABLE) // ボイラーと同様に追加
+                    .build();
 
-public static final TileEntityTypeRegistryObject<TileEntityTransmuterPort> TRANSMUTER_PORT =
-        TILE_ENTITY_TYPES.mekBuilder(ModBlocks.TRANSMUTER_PORT, TileEntityTransmuterPort::new)
-            .withSimple(Capabilities.CONFIGURABLE)
-            .build();
+    public static final TileEntityTypeRegistryObject<TileEntityTransmuterPort> TRANSMUTER_PORT =
+            TILE_ENTITY_TYPES.mekBuilder(ModBlocks.TRANSMUTER_PORT, TileEntityTransmuterPort::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
+                    .withSimple(Capabilities.CONFIGURABLE)
+                    .build();
 }

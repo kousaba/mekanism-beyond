@@ -16,12 +16,12 @@ import net.minecraft.world.item.Items;
 import java.util.concurrent.CompletableFuture;
 
 public class ModRecipeProvider extends RecipeProvider {
-    public ModRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registies){
+    public ModRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registies) {
         super(output, registies);
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput output){
+    protected void buildRecipes(RecipeOutput output) {
         NucleosynthesizingRecipeBuilder.nucleosynthesizing(
                 IngredientCreatorAccess.item().from(MekanismItems.ATOMIC_ALLOY),
                 IngredientCreatorAccess.chemicalStack().fromHolder(MekanismChemicals.ANTIMATTER, 10),

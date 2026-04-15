@@ -5,11 +5,12 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
 public class ModLanguageProvider extends LanguageProvider {
-    public ModLanguageProvider(PackOutput output, String modid, String locale){
+    public ModLanguageProvider(PackOutput output, String modid, String locale) {
         super(output, modid, locale);
     }
+
     @Override
-    protected void addTranslations(){
+    protected void addTranslations() {
         add(MekanismExtended.NANO_ALLOY.get(), "Nano Alloy");
     }
 }

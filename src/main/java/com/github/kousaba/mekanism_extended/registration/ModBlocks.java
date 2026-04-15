@@ -28,17 +28,20 @@ import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final BlockDeferredRegister BLOCKS = new BlockDeferredRegister(MekanismExtended.MODID);
+
     private static <BLOCK extends Block & IHasDescription> BlockRegistryObject<BLOCK, ItemBlockTooltip<BLOCK>> registerBlock(String name, Supplier<? extends BLOCK> blockSupplier) {
         return BLOCKS.register(name, blockSupplier, ItemBlockTooltip::new);
-    }public static final BlockRegistryObject<BlockTransmuterCasing<TileEntityTransmuterCasing>, ItemBlockTooltip<BlockTransmuterCasing<TileEntityTransmuterCasing>>> TRANSMUTER_CASING =
+    }
+
+    public static final BlockRegistryObject<BlockTransmuterCasing<TileEntityTransmuterCasing>, ItemBlockTooltip<BlockTransmuterCasing<TileEntityTransmuterCasing>>> TRANSMUTER_CASING =
             BLOCKS.register("transmuter_casing",
-                () -> new BlockTransmuterCasing<>(TransmuterBlockTypes.TRANSMUTER_CASING),
-                ItemBlockTooltip::new);
+                    () -> new BlockTransmuterCasing<>(TransmuterBlockTypes.TRANSMUTER_CASING),
+                    ItemBlockTooltip::new);
 
     // Portの登録
     // ここで型引数を <TileEntityTransmuterPort> にすることでエラーが解消されます
     public static final BlockRegistryObject<BlockTransmuterCasing<TileEntityTransmuterPort>, ItemBlockTooltip<BlockTransmuterCasing<TileEntityTransmuterPort>>> TRANSMUTER_PORT =
             BLOCKS.register("transmuter_port",
-                () -> new BlockTransmuterCasing<>(TransmuterBlockTypes.TRANSMUTER_PORT),
-                ItemBlockTooltip::new);
+                    () -> new BlockTransmuterCasing<>(TransmuterBlockTypes.TRANSMUTER_PORT),
+                    ItemBlockTooltip::new);
 }
