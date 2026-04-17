@@ -12,5 +12,8 @@ public class ModLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add(MekanismExtended.NANO_ALLOY.get(), "Nano Alloy");
+        add("chat.mekanism_extended.port_mode", "Port Mode: %s");
+        add("chat.mekanism_extended.input", "Input");
+        add("chat.mekanism_extended.output", "Output");
     }
 }

@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import mekanism.common.lib.math.voxel.VoxelCuboid;
 import mekanism.common.lib.multiblock.CuboidStructureValidator;
 import mekanism.common.lib.multiblock.FormationProtocol;
-import mekanism.common.lib.multiblock.Structure;
 import mekanism.common.lib.multiblock.StructureHelper;
 import mekanism.common.registries.MekanismBlocks;
 import mekanism.generators.common.registries.GeneratorsBlocks;
@@ -43,55 +42,58 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
         return FormationProtocol.CasingType.INVALID;
     }
 
+
     @Override
     public boolean validateInner(BlockState state, Long2ObjectMap<ChunkAccess> chunkMap, BlockPos pos) {
         if (super.validateInner(state, chunkMap, pos)) {
             return true;
         }
 
-        int minH = cuboid.getMinPos().getY() + 1;
-        int maxH = cuboid.getMaxPos().getY() - 1;
-        int midY = (minH + maxH) / 2;
+        int minH = cuboid.getMinPos().getY() + 1; // 内部の一番下
+        int maxH = cuboid.getMaxPos().getY() - 1; // 内部の一番上
+
         int centerX = (cuboid.getMinPos().getX() + cuboid.getMaxPos().getX()) / 2;
         int centerZ = (cuboid.getMinPos().getZ() + cuboid.getMaxPos().getZ()) / 2;
 
         Block block = state.getBlock();
 
-        // --- 1. 中央3層は空気でなければならない ---
-        if (pos.getY() >= midY - 1 && pos.getY() <= midY + 1) {
+        // --- 1. 空気層（一番上と一番下 "以外" のすべての層）のチェック ---
+        if (pos.getY() > minH && pos.getY() < maxH) {
             if (!state.isAir()) {
-                System.out.println("[TransmuterValidator] 内部検証失敗 座標:" + pos.toShortString() + " | 原因: 中央の3層に空気を期待しましたが、" + BuiltInRegistries.BLOCK.getKey(block) + " がありました。");
+                System.out.println("[TransmuterValidator] 内部検証失敗 座標:" + pos.toShortString() + " | 原因: 空気層に " + BuiltInRegistries.BLOCK.getKey(block) + " がありました。");
                 innerStructureValid = false;
                 return false;
             }
-            return true;
+            return true; // 空気ならOK
         }
 
-        // --- 2. コイル層（中央3層以外の上・下）のチェック ---
-        // 中心3x3の範囲内かどうか
-        if (Math.abs(pos.getX() - centerX) <= 1 && Math.abs(pos.getZ() - centerZ) <= 1) {
+        // --- 2. コイル層（一番上 minH と一番下 maxH）のチェック ---
+        if (pos.getY() == minH || pos.getY() == maxH) {
 
-            // ① 中心軸のみ Supercharged Coil を許可 (state.is() ではなく直接比較)
-            if (pos.getX() == centerX && pos.getZ() == centerZ && block == MekanismBlocks.SUPERCHARGED_COIL.get()) {
-                superchargedCoilFound = true;
-                return true;
+            // ① 中心軸のみ Supercharged Coil または Electromagnetic Coil を許可
+            if (pos.getX() == centerX && pos.getZ() == centerZ) {
+                if (block == MekanismBlocks.SUPERCHARGED_COIL.get()) {
+                    superchargedCoilFound = true;
+                    return true;
+                } else if (block == GeneratorsBlocks.ELECTROMAGNETIC_COIL.get()) {
+                    electromagneticCoils++;
+                    return true;
+                }
             }
-            // ② 3x3の範囲（中心軸含む）は Electromagnetic Coil を許可
+            // ② 中心軸以外のコイル層全体は Electromagnetic Coil を許可
             else if (block == GeneratorsBlocks.ELECTROMAGNETIC_COIL.get()) {
                 electromagneticCoils++;
                 return true;
             }
 
-            // コイル以外のブロックが置かれていたら警告
+            // コイル以外のブロックが置かれていたら失敗
             if (!state.isAir()) {
-                System.out.println("[TransmuterValidator] 内部検証注意 座標:" + pos.toShortString() + " | コイル範囲(3x3)にコイル以外のブロック: " + BuiltInRegistries.BLOCK.getKey(block));
+                System.out.println("[TransmuterValidator] 内部検証失敗 座標:" + pos.toShortString() + " | 原因: コイル層にコイル以外のブロック: " + BuiltInRegistries.BLOCK.getKey(block));
+                return false;
             }
-        }
 
-        // それ以外の内部は空気であることを許可
-        if (!state.isAir()) {
-            System.out.println("[TransmuterValidator] 内部検証失敗 座標:" + pos.toShortString() + " | 原因: 空気を期待した場所に " + BuiltInRegistries.BLOCK.getKey(block) + " がありました。");
-            return false;
+            // コイル層に空気を置くのは許可（ぎっしり敷き詰めなくてもOKな場合）
+            return true;
         }
 
         return true;
@@ -127,6 +129,6 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
             return false;
         }
         System.out.println("[TransmuterValidator] precheck() 成功: 枠のサイズは " + cuboid.length() + "x" + cuboid.height() + "x" + cuboid.width() + " です。");
-        return super.precheck();
+        return true;
     }
 }

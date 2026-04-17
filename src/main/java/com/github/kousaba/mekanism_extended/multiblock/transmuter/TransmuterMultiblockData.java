@@ -16,16 +16,19 @@ import mekanism.common.inventory.container.sync.dynamic.ContainerSync;
 import mekanism.common.lib.multiblock.IValveHandler;
 import mekanism.common.lib.multiblock.MultiblockData;
 import mekanism.common.registries.MekanismBlocks;
+import mekanism.common.registries.MekanismFluids;
 import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.common.tile.prefab.TileEntityStructuralMultiblock;
 import mekanism.common.util.ChemicalUtil;
+import mekanism.common.util.FluidUtils;
 import mekanism.common.util.WorldUtils;
 import mekanism.generators.common.registries.GeneratorsBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +57,7 @@ public class TransmuterMultiblockData extends MultiblockData {
     public IEnergyContainer energyContainer;
     @ContainerSync
     public IExtendedFluidTank waterTank;
+    private final List<CapabilityOutputTarget<IFluidHandler>> fluidOutputTargets = new ArrayList<>();
     @ContainerSync
     public IChemicalTank uraniumWaterTank;
 
@@ -67,14 +71,22 @@ public class TransmuterMultiblockData extends MultiblockData {
     private long currentProductionRate = 0;
     @ContainerSync
     private boolean active = false;
+    @ContainerSync
+    public IExtendedFluidTank heavyWaterTank;
+    @ContainerSync
+    public long currentEnergyUsage = ENERGY_USAGE_PER_TICK;
 
     private final List<CapabilityOutputTarget<IChemicalHandler>> chemicalOutputTargets = new ArrayList<>();
+    @ContainerSync
+    public int currentWaterUsage = WATER_USAGE_PER_TICK;
 
     public TransmuterMultiblockData(TileEntityMekanism tile) {
         super(tile);
         fluidTanks.add(waterTank = VariableCapacityFluidTank.input(this, () -> BASE_WATER_CAPACITY,
-                fluid -> fluid.is(FluidTags.WATER), this));
-        chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.input(this, () -> BASE_CHEMICAL_CAPACITY,
+                fluid -> fluid.getFluid() == net.minecraft.world.level.material.Fluids.WATER, this));
+        fluidTanks.add(heavyWaterTank = VariableCapacityFluidTank.output(this, () -> BASE_WATER_CAPACITY,
+                fluid -> fluid.getFluid() == MekanismFluids.HEAVY_WATER.get(), this));
+        chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.output(this, () -> BASE_CHEMICAL_CAPACITY,
                 chemical -> chemical.is(ModChemicals.URANIUM_WATER.get()), this));
         energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
     }
@@ -85,18 +97,24 @@ public class TransmuterMultiblockData extends MultiblockData {
 
         fluidTanks.add(waterTank = VariableCapacityFluidTank.input(this, () -> BASE_WATER_CAPACITY,
                 fluid -> fluid.is(FluidTags.WATER), this));
-        chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.input(this, () -> BASE_CHEMICAL_CAPACITY,
+        chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.output(this, () -> BASE_CHEMICAL_CAPACITY,
                 chemical -> chemical.is(ModChemicals.URANIUM_WATER.get()), this));
         energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
+    }
+
+    private void updateCalculations() {
+        int area = length() * width();
+        currentProbability = BASE_PROBABILITY + (area * SIZE_PROBABILITY_FACTOR);
+        double speedMultiplier = 1.0 + (electromagneticCoilCount * COIL_SPEED_BONUS);
+        currentProductionRate = (long) (BASE_PRODUCTION_AMOUNT * speedMultiplier);
+        currentEnergyUsage = (long) (ENERGY_USAGE_PER_TICK * speedMultiplier);
+        currentWaterUsage = (int) (WATER_USAGE_PER_TICK * speedMultiplier);
     }
 
     @Override
     public void onCreated(Level world) {
         super.onCreated(world);
-        scanInternalStructures(world);
-        int area = length() * width();
-        currentProbability = BASE_PROBABILITY + (area * SIZE_PROBABILITY_FACTOR);
-        currentProductionRate = (long) (BASE_PRODUCTION_AMOUNT * (1 + electromagneticCoilCount * COIL_SPEED_BONUS));
+        updateCalculations();
     }
 
     private void scanInternalStructures(Level world) {
@@ -155,12 +173,21 @@ public class TransmuterMultiblockData extends MultiblockData {
         boolean needsPacket = super.tick(world);
 
         // 動作条件: Supercharged Coilが存在し、水と電力が足りていること
-        if (hasSuperchargedCoil && energyContainer.getEnergy() >= ENERGY_USAGE_PER_TICK && waterTank.getFluidAmount() >= WATER_USAGE_PER_TICK) {
+        if (hasSuperchargedCoil && energyContainer.getEnergy() >= currentEnergyUsage && waterTank.getFluidAmount() >= currentWaterUsage) {
             active = true;
 
             // エネルギーと水の消費
-            energyContainer.extract(ENERGY_USAGE_PER_TICK, Action.EXECUTE, AutomationType.INTERNAL);
-            waterTank.shrinkStack(WATER_USAGE_PER_TICK, Action.EXECUTE);
+            energyContainer.extract(currentEnergyUsage, Action.EXECUTE, AutomationType.INTERNAL);
+            waterTank.shrinkStack(currentWaterUsage, Action.EXECUTE);
+
+            double exactHeavyWater = currentWaterUsage / 6400.0;
+            int heavyWaterProduced = (int) exactHeavyWater;
+            if (world.random.nextDouble() < (exactHeavyWater - heavyWaterProduced)) {
+                heavyWaterProduced++;
+            }
+            if (heavyWaterProduced > 0) {
+                heavyWaterTank.insert(new FluidStack(MekanismFluids.HEAVY_WATER.get(), heavyWaterProduced), Action.EXECUTE, AutomationType.INTERNAL);
+            }
 
             // 確率判定
             if (world.random.nextDouble() < currentProbability) {
@@ -179,6 +206,9 @@ public class TransmuterMultiblockData extends MultiblockData {
         if (!chemicalOutputTargets.isEmpty() && !uraniumWaterTank.isEmpty()) {
             ChemicalUtil.emit(getActiveOutputs(chemicalOutputTargets), uraniumWaterTank);
         }
+        if (!fluidOutputTargets.isEmpty() && !heavyWaterTank.isEmpty()) {
+            FluidUtils.emit(getActiveOutputs(fluidOutputTargets), heavyWaterTank);
+        }
 
         return needsPacket;
     }
@@ -186,10 +216,12 @@ public class TransmuterMultiblockData extends MultiblockData {
     @Override
     protected void updateEjectors(Level world) {
         chemicalOutputTargets.clear();
+        fluidOutputTargets.clear();
         for (IValveHandler.ValveData valve : valves) {
             TileEntityTransmuterPort tile = WorldUtils.getTileEntity(TileEntityTransmuterPort.class, world, valve.location);
             if (tile != null) {
                 tile.addGasTargetCapability(chemicalOutputTargets, valve.side);
+                tile.addFluidTargetCapability(fluidOutputTargets, valve.side);
             }
         }
     }
@@ -197,9 +229,7 @@ public class TransmuterMultiblockData extends MultiblockData {
     public void setCoilData(boolean hasSuper, int count) {
         this.hasSuperchargedCoil = hasSuper;
         this.electromagneticCoilCount = count;
-        int area = length() * width();
-        currentProbability = BASE_PROBABILITY + (area * SIZE_PROBABILITY_FACTOR);
-        currentProductionRate = (long) (BASE_PRODUCTION_AMOUNT * (1 + electromagneticCoilCount * COIL_SPEED_BONUS));
+        updateCalculations();
     }
 
     public boolean hasSuperchargedCoil() {
