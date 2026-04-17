@@ -1,6 +1,6 @@
-package com.github.kousaba.mekanism_extended.multiblock.transmuter;
+package com.github.kousaba.mekanism_beyond.multiblock.transmuter;
 
-import com.github.kousaba.mekanism_extended.registration.ModChemicals;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondChemicals;
 import mekanism.api.Action;
 import mekanism.api.AutomationType;
 import mekanism.api.chemical.ChemicalStack;
@@ -87,7 +87,7 @@ public class TransmuterMultiblockData extends MultiblockData {
         fluidTanks.add(heavyWaterTank = VariableCapacityFluidTank.output(this, () -> BASE_WATER_CAPACITY,
                 fluid -> fluid.getFluid() == MekanismFluids.HEAVY_WATER.get(), this));
         chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.output(this, () -> BASE_CHEMICAL_CAPACITY,
-                chemical -> chemical.is(ModChemicals.URANIUM_WATER.get()), this));
+                chemical -> chemical.is(MekBeyondChemicals.URANIUM_WATER.get()), this));
         energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
     }
 
@@ -98,7 +98,7 @@ public class TransmuterMultiblockData extends MultiblockData {
         fluidTanks.add(waterTank = VariableCapacityFluidTank.input(this, () -> BASE_WATER_CAPACITY,
                 fluid -> fluid.is(FluidTags.WATER), this));
         chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.output(this, () -> BASE_CHEMICAL_CAPACITY,
-                chemical -> chemical.is(ModChemicals.URANIUM_WATER.get()), this));
+                chemical -> chemical.is(MekBeyondChemicals.URANIUM_WATER.get()), this));
         energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
     }
 
@@ -192,7 +192,7 @@ public class TransmuterMultiblockData extends MultiblockData {
             // 確率判定
             if (world.random.nextDouble() < currentProbability) {
                 // 生成処理
-                uraniumWaterTank.insert(new ChemicalStack(ModChemicals.URANIUM_WATER.get(), currentProductionRate), Action.EXECUTE, AutomationType.INTERNAL);
+                uraniumWaterTank.insert(new ChemicalStack(MekBeyondChemicals.URANIUM_WATER.get(), currentProductionRate), Action.EXECUTE, AutomationType.INTERNAL);
             }
         } else {
             active = false;

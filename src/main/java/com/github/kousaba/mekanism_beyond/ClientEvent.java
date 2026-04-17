@@ -1,14 +1,14 @@
-package com.github.kousaba.mekanism_extended;
+package com.github.kousaba.mekanism_beyond;
 
-import com.github.kousaba.mekanism_extended.client.gui.GuiTransmuter;
-import com.github.kousaba.mekanism_extended.registration.ModContainerTypes;
+import com.github.kousaba.mekanism_beyond.client.gui.GuiTransmuter;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondContainerTypes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
-@EventBusSubscriber(modid = MekanismExtended.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MekanismBeyond.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEvent {
     public static void init(FMLClientSetupEvent event) {
 
@@ -16,6 +16,6 @@ public class ClientEvent {
 
     @SubscribeEvent
     public static void renderScreens(RegisterMenuScreensEvent event) {
-        event.register(ModContainerTypes.TRANSMUTER.get(), GuiTransmuter::new);
+        event.register(MekBeyondContainerTypes.TRANSMUTER.get(), GuiTransmuter::new);
     }
 }

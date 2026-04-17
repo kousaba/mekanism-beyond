@@ -1,26 +1,21 @@
-package com.github.kousaba.mekanism_extended.datagen;
+package com.github.kousaba.mekanism_beyond.datagen;
 
-import com.github.kousaba.mekanism_extended.registration.ModBlocks;
-import com.google.gson.JsonObject;
-import mekanism.common.block.attribute.Attributes;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.annotation.Nonnull;
-
-public class ModBlockStateProvider extends BlockStateProvider {
-    public ModBlockStateProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
+public class MekBeyondBlockStateProvider extends BlockStateProvider {
+    public MekBeyondBlockStateProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
         super(output, modid, existingFileHelper);
     }
 
     @Override
     protected void registerStatesAndModels() {
-        simpleBlock(ModBlocks.TRANSMUTER_CASING.get());
+        simpleBlock(MekBeyondBlocks.TRANSMUTER_CASING.get());
 
         // Mekanismの親モデルのパスを定義
         ResourceLocation templatePath = ResourceLocation.fromNamespaceAndPath("mekanism", "block/template/cube_all_led");
@@ -39,7 +34,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
             .texture("led", modLoc("block/transmuter_port_output_led"));
 
         // --- 3. BlockStateの紐付け ---
-        getVariantBuilder(ModBlocks.TRANSMUTER_PORT.get())
+        getVariantBuilder(MekBeyondBlocks.TRANSMUTER_PORT.get())
             .forAllStates(state -> {
                 Property<?> property = state.getBlock().getStateDefinition().getProperty("active");
                 boolean isActive = false;

@@ -1,12 +1,12 @@
-package com.github.kousaba.mekanism_extended;
+package com.github.kousaba.mekanism_beyond;
 
-import com.github.kousaba.mekanism_extended.datagen.DataGenerators;
-import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterMultiblockData;
-import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterValidator;
-import com.github.kousaba.mekanism_extended.registration.ModBlocks;
-import com.github.kousaba.mekanism_extended.registration.ModChemicals;
-import com.github.kousaba.mekanism_extended.registration.ModContainerTypes;
-import com.github.kousaba.mekanism_extended.registration.ModTileEntities;
+import com.github.kousaba.mekanism_beyond.datagen.DataGenerators;
+import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterMultiblockData;
+import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterValidator;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondBlocks;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondChemicals;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondContainerTypes;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondTileEntities;
 import com.mojang.logging.LogUtils;
 import mekanism.common.lib.multiblock.MultiblockCache;
 import mekanism.common.lib.multiblock.MultiblockManager;
@@ -26,9 +26,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(MekanismExtended.MODID)
-public class MekanismExtended {
-    public static final String MODID = "mekanism_extended";
+@Mod(MekanismBeyond.MODID)
+public class MekanismBeyond {
+    public static final String MODID = "mekanism_beyond";
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredItem<Item> NANO_ALLOY = ITEMS.registerSimpleItem("nano_alloy", new Item.Properties());
@@ -36,16 +36,16 @@ public class MekanismExtended {
     // --- ブロック登録 (シンボルを解決) ---
 
 
-    public MekanismExtended(IEventBus modEventBus, ModContainer modContainer) {
+    public MekanismBeyond(IEventBus modEventBus, ModContainer modContainer) {
         ITEMS.register(modEventBus);
-        ModBlocks.BLOCKS.register(modEventBus);
-        ModTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
-        ModContainerTypes.CONTAINER_TYPES.register(modEventBus);
-        ModChemicals.CHEMICALS.register(modEventBus);
+        MekBeyondBlocks.BLOCKS.register(modEventBus);
+        MekBeyondTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
+        MekBeyondContainerTypes.CONTAINER_TYPES.register(modEventBus);
+        MekBeyondChemicals.CHEMICALS.register(modEventBus);
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(ClientEvent::init);
         System.out.println("Force Initializing Manager: " + transmuterManager);
-        LOGGER.info("Mekansim Extended loaded!");
+        LOGGER.info("Mekansim Beyond loaded!");
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

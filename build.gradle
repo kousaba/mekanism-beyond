@@ -21,13 +21,13 @@ neoForge {
         }
         data{
             data()
-            programArguments.addAll '--mod', 'mekanism_extended', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            programArguments.addAll '--mod', 'mekanism_beyond', '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
     }
 
     mods {
         // ここを neoforge.mods.toml の modId と一致させます
-        mekanism_extended {
+        mekanism_beyond {
             sourceSet sourceSets.main
         }
     }

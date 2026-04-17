@@ -3,29 +3,29 @@ loaderVersion="[4,)"
 license="MIT"
 
 [[mods]]
-    modId="mekanism_extended"
+    modId="mekanism_beyond"
     version="1.0.0"
-    displayName="Mekanism Extended"
+    displayName="Mekanism Beyond"
     authors="kousaba"
     description="SF Addon for Mekanism"
 
 [[mixins]]
-config="mekanism_extended.mixins.json"
+config="mekanism_beyond.mixins.json"
 
-[[dependencies.mekanism_extended]]
+[[dependencies.mekanism_beyond]]
     modId="neoforge"
     type="required"
     versionRange="[21,)"
     ordering="NONE"
     side="BOTH"
 
-[[dependencies.mekanism_extended]]
+[[dependencies.mekanism_beyond]]
     modId="mekanism"
     type="required"
     versionRange="[10.7,)"
     ordering="AFTER"
     side="BOTH"
-[[dependencies.mekanism_extended]]
+[[dependencies.mekanism_beyond]]
     modId="mekanismgenerators"
     type="required"
     versionRange="[10.7.15,)"

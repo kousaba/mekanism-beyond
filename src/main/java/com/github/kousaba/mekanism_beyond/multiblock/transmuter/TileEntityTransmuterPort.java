@@ -1,6 +1,6 @@
-package com.github.kousaba.mekanism_extended.multiblock.transmuter;
+package com.github.kousaba.mekanism_beyond.multiblock.transmuter;
 
-import com.github.kousaba.mekanism_extended.registration.ModBlocks;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondBlocks;
 import mekanism.api.IContentsListener;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class TileEntityTransmuterPort extends TileEntityTransmuterCasing {
     public TileEntityTransmuterPort(BlockPos pos, BlockState state) {
-        super(ModBlocks.TRANSMUTER_PORT, pos, state);
+        super(MekBeyondBlocks.TRANSMUTER_PORT, pos, state);
         // 連打したときに不安定になるのを解消
         delaySupplier = NO_DELAY;
     }
@@ -34,7 +34,7 @@ public class TileEntityTransmuterPort extends TileEntityTransmuterCasing {
             boolean oldMode = getActive();
             setActive(!oldMode);
             boolean newMode = getActive();
-            Component modeText = Component.translatable(newMode ? "chat.mekanism_extended.output" : "chat.mekanism_extended.input")
+            Component modeText = Component.translatable(newMode ? "chat.mekanism_beyond.output" : "chat.mekanism_beyond.input")
                     .withStyle(net.minecraft.ChatFormatting.GRAY);
             player.displayClientMessage(Component.translatable("chat.mekanism_extended.port_mode", modeText), true);
         }

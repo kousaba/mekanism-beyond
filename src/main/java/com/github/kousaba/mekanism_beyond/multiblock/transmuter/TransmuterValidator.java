@@ -1,6 +1,6 @@
-package com.github.kousaba.mekanism_extended.multiblock.transmuter;
+package com.github.kousaba.mekanism_beyond.multiblock.transmuter;
 
-import com.github.kousaba.mekanism_extended.registration.ModBlocks;
+import com.github.kousaba.mekanism_beyond.registration.MekBeyondBlocks;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import mekanism.common.lib.math.voxel.VoxelCuboid;
 import mekanism.common.lib.multiblock.CuboidStructureValidator;
@@ -32,9 +32,9 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
     @Override
     protected FormationProtocol.CasingType getCasingType(BlockState state) {
         Block block = state.getBlock();
-        if (block == ModBlocks.TRANSMUTER_CASING.get()) {
+        if (block == MekBeyondBlocks.TRANSMUTER_CASING.get()) {
             return FormationProtocol.CasingType.FRAME;
-        } else if (block == ModBlocks.TRANSMUTER_PORT.get()) { // ポート用ブロック
+        } else if (block == MekBeyondBlocks.TRANSMUTER_PORT.get()) { // ポート用ブロック
             return FormationProtocol.CasingType.VALVE;
         } else if (block == MekanismBlocks.STRUCTURAL_GLASS.get()){
             return FormationProtocol.CasingType.OTHER;

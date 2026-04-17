@@ -1,29 +1,19 @@
-package com.github.kousaba.mekanism_extended.multiblock.transmuter;
+package com.github.kousaba.mekanism_beyond.multiblock.transmuter;
 
-import com.github.kousaba.mekanism_extended.MekanismExtended;
-import com.github.kousaba.mekanism_extended.registration.ModTileEntities;
 import mekanism.api.text.ILangEntry;
-import mekanism.common.block.BlockMekanism;
 import mekanism.common.block.interfaces.IHasDescription;
-import mekanism.common.block.interfaces.IHasTileEntity;
 import mekanism.common.block.prefab.BlockTile;
 import mekanism.common.content.blocktype.BlockTypeTile;
-import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 
 public class BlockTransmuterCasing<TILE extends TileEntityTransmuterCasing>
@@ -47,6 +37,6 @@ public class BlockTransmuterCasing<TILE extends TileEntityTransmuterCasing>
     @NotNull
     @Override
     public ILangEntry getDescription() {
-        return () -> "description.mekanism_extended.transmuter_casing";
+        return () -> "description.mekanism_beyond.transmuter_casing";
     }
 }

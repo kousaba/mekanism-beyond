@@ -1,7 +1,7 @@
-package com.github.kousaba.mekanism_extended.client.gui;
+package com.github.kousaba.mekanism_beyond.client.gui;
 
-import com.github.kousaba.mekanism_extended.multiblock.transmuter.TileEntityTransmuterCasing;
-import com.github.kousaba.mekanism_extended.multiblock.transmuter.TransmuterMultiblockData;
+import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterCasing;
+import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterMultiblockData;
 import mekanism.client.gui.GuiMekanism;
 import mekanism.client.gui.element.GuiInnerScreen;
 import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
