@@ -30,6 +30,25 @@ public class TileEntityTransmuterCasing extends TileEntityMultiblock<TransmuterM
         super.onAdded();
     }
 
+    @Override
+    protected void onUpdateClient() {
+        super.onUpdateClient();
+
+        // 引数ではなく、getMultiblock() で取得する
+        TransmuterMultiblockData multiblock = getMultiblock();
+
+        // 構成済みの場合のみアニメーション計算を行う
+        if (multiblock.isFormed()) {
+            float targetScale = (float) multiblock.waterTank.getFluidAmount() / multiblock.BASE_WATER_CAPACITY;
+
+            // 水位を滑らかに更新 (prevScaleはDataクラスのメンバ変数)
+            if (Math.abs(multiblock.prevScale - targetScale) > 0.01) {
+                multiblock.prevScale = (multiblock.prevScale * 9 + targetScale) / 10;
+            } else {
+                multiblock.prevScale = targetScale;
+            }
+        }
+    }
 
     @Override
     public MultiblockManager<TransmuterMultiblockData> getManager() {

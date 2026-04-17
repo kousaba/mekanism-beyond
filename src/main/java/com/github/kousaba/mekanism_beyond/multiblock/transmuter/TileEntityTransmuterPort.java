@@ -36,7 +36,7 @@ public class TileEntityTransmuterPort extends TileEntityTransmuterCasing {
             boolean newMode = getActive();
             Component modeText = Component.translatable(newMode ? "chat.mekanism_beyond.output" : "chat.mekanism_beyond.input")
                     .withStyle(net.minecraft.ChatFormatting.GRAY);
-            player.displayClientMessage(Component.translatable("chat.mekanism_extended.port_mode", modeText), true);
+            player.displayClientMessage(Component.translatable("chat.mekanism_beyond.port_mode", modeText), true);
         }
         return InteractionResult.SUCCESS;
     }

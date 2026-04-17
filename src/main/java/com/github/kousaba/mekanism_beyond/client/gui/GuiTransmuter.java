@@ -1,5 +1,6 @@
 package com.github.kousaba.mekanism_beyond.client.gui;
 
+import com.github.kousaba.mekanism_beyond.beyond_energy.GuiBeyondVerticalPowerBar;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterCasing;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterMultiblockData;
 import mekanism.client.gui.GuiMekanism;
@@ -60,7 +61,7 @@ public class GuiTransmuter extends GuiMekanism<MekanismTileContainer<TileEntityT
         ));
 
         // 5. 一番右端: 電力バー (Input)
-        addRenderableWidget(new GuiVerticalPowerBar(this, multiblock.energyContainer, 184, 15));
+        addRenderableWidget(new GuiBeyondVerticalPowerBar(this, multiblock.energyContainer, 184, 15));
     }
 
     @Override

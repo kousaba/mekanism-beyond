@@ -1,15 +1,15 @@
 package com.github.kousaba.mekanism_beyond.multiblock.transmuter;
 
+import com.github.kousaba.mekanism_beyond.beyond_energy.BeyondVariableCapacityEnergyContainer;
+import com.github.kousaba.mekanism_beyond.beyond_energy.IBeyondEnergyContainer;
 import com.github.kousaba.mekanism_beyond.registration.MekBeyondChemicals;
 import mekanism.api.Action;
 import mekanism.api.AutomationType;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.api.chemical.IChemicalTank;
-import mekanism.api.energy.IEnergyContainer;
 import mekanism.api.fluid.IExtendedFluidTank;
 import mekanism.common.capabilities.chemical.VariableCapacityChemicalTank;
-import mekanism.common.capabilities.energy.VariableCapacityEnergyContainer;
 import mekanism.common.capabilities.fluid.VariableCapacityFluidTank;
 import mekanism.common.integration.computer.annotation.ComputerMethod;
 import mekanism.common.inventory.container.sync.dynamic.ContainerSync;
@@ -24,7 +24,8 @@ import mekanism.common.util.FluidUtils;
 import mekanism.common.util.WorldUtils;
 import mekanism.generators.common.registries.GeneratorsBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.FluidTags;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -41,12 +42,12 @@ public class TransmuterMultiblockData extends MultiblockData {
     public static final int MAX_Z = 17;
     public static final int MAX_Y = 18;
 
-    public static final long BASE_ENERGY_CAPACITY = 100_000_000_000L;
+    public static final double BASE_ENERGY_CAPACITY = 10.0;
     public static final int BASE_WATER_CAPACITY = 100_000_000;
     public static final long BASE_CHEMICAL_CAPACITY = 100_000_000L;
 
     public static final long ENERGY_USAGE_PER_TICK = 10_000_000;
-    public static final int WATER_USAGE_PER_TICK = 10_000;
+    public static final int WATER_USAGE_PER_TICK = 10;
 
     public static final double BASE_PROBABILITY = 0.001;
     public static final double SIZE_PROBABILITY_FACTOR = 0.0001;
@@ -54,7 +55,7 @@ public class TransmuterMultiblockData extends MultiblockData {
     public static final double COIL_SPEED_BONUS = 0.5;
 
     @ContainerSync
-    public IEnergyContainer energyContainer;
+    public IBeyondEnergyContainer energyContainer;
     @ContainerSync
     public IExtendedFluidTank waterTank;
     private final List<CapabilityOutputTarget<IFluidHandler>> fluidOutputTargets = new ArrayList<>();
@@ -80,6 +81,9 @@ public class TransmuterMultiblockData extends MultiblockData {
     @ContainerSync
     public int currentWaterUsage = WATER_USAGE_PER_TICK;
 
+    public List<BlockPos> superchargedCoils = new ArrayList<>();
+    public float prevScale = 0; // 流体の高さ補間用
+
     public TransmuterMultiblockData(TileEntityMekanism tile) {
         super(tile);
         fluidTanks.add(waterTank = VariableCapacityFluidTank.input(this, () -> BASE_WATER_CAPACITY,
@@ -88,18 +92,10 @@ public class TransmuterMultiblockData extends MultiblockData {
                 fluid -> fluid.getFluid() == MekanismFluids.HEAVY_WATER.get(), this));
         chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.output(this, () -> BASE_CHEMICAL_CAPACITY,
                 chemical -> chemical.is(MekBeyondChemicals.URANIUM_WATER.get()), this));
-        energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
-    }
-
-    public TransmuterMultiblockData() {
-        super(null);
-        System.out.println("transmutermultiblockdata");
-
-        fluidTanks.add(waterTank = VariableCapacityFluidTank.input(this, () -> BASE_WATER_CAPACITY,
-                fluid -> fluid.is(FluidTags.WATER), this));
-        chemicalTanks.add(uraniumWaterTank = VariableCapacityChemicalTank.output(this, () -> BASE_CHEMICAL_CAPACITY,
-                chemical -> chemical.is(MekBeyondChemicals.URANIUM_WATER.get()), this));
-        energyContainers.add(energyContainer = VariableCapacityEnergyContainer.input(BASE_ENERGY_CAPACITY, this));
+        this.energyContainer = BeyondVariableCapacityEnergyContainer.input(
+                () -> (double) length() * width() * height() * BASE_ENERGY_CAPACITY,
+                this
+        );
     }
 
     private void updateCalculations() {
@@ -210,6 +206,19 @@ public class TransmuterMultiblockData extends MultiblockData {
             FluidUtils.emit(getActiveOutputs(fluidOutputTargets), heavyWaterTank);
         }
 
+        float targetScale = (float) waterTank.getFluidAmount() / BASE_WATER_CAPACITY;
+        if (Math.abs(prevScale - targetScale) > 0.01) {
+            prevScale = (prevScale * 9 + targetScale) / 10;
+        } else {
+            prevScale = targetScale;
+        }
+
+        boolean isActuallyActive = hasSuperchargedCoil && energyContainer.getEnergy() >= currentEnergyUsage && waterTank.getFluidAmount() >= currentWaterUsage;
+        if (this.active != isActuallyActive) {
+            this.active = isActuallyActive;
+            needsPacket = true; // これでパケットが送られる
+        }
+
         return needsPacket;
     }
 
@@ -230,6 +239,45 @@ public class TransmuterMultiblockData extends MultiblockData {
         this.hasSuperchargedCoil = hasSuper;
         this.electromagneticCoilCount = count;
         updateCalculations();
+    }
+
+    @Override
+    public void readUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readUpdateTag(tag, provider);
+        // クライアント側でデータを受け取る
+        this.prevScale = tag.getFloat("prevScale");
+        this.active = tag.getBoolean("active");
+
+        this.superchargedCoils.clear();
+        for (long posLong : tag.getLongArray("coils")) {
+            this.superchargedCoils.add(BlockPos.of(posLong));
+        }
+    }
+
+    @Override
+    public void writeUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeUpdateTag(tag, provider);
+        // サーバー側からデータを送る
+        tag.putFloat("prevScale", this.prevScale);
+        tag.putBoolean("active", this.active);
+
+        List<Long> positions = new ArrayList<>();
+        for (BlockPos pos : this.superchargedCoils) {
+            positions.add(pos.asLong());
+        }
+        tag.putLongArray("coils", positions);
+    }
+
+    public BlockPos getInnerMinPos() {
+        return getMinPos().offset(1, 1, 1);
+    }
+
+    public BlockPos getInnerMaxPos() {
+        return getMaxPos().offset(-1, -1, -1);
+    }
+
+    public boolean isMaster(BlockPos pos) {
+        return isFormed() && pos.equals(getMinPos());
     }
 
     public boolean hasSuperchargedCoil() {

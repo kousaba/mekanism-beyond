@@ -15,7 +15,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 public class TransmuterValidator extends CuboidStructureValidator<TransmuterMultiblockData> {
     private static final VoxelCuboid MIN_BOUNDS = new VoxelCuboid(5, 7, 5);
@@ -23,6 +25,7 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
     private int electromagneticCoils = 0;
     private boolean superchargedCoilFound = false;
     private boolean innerStructureValid = true;
+    private List<BlockPos> superchargedCoilPositions = new ArrayList<>();
 
     public TransmuterValidator() {
         super();
@@ -74,6 +77,7 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
             if (pos.getX() == centerX && pos.getZ() == centerZ) {
                 if (block == MekanismBlocks.SUPERCHARGED_COIL.get()) {
                     superchargedCoilFound = true;
+                    superchargedCoilPositions.add(pos.immutable());
                     return true;
                 } else if (block == GeneratorsBlocks.ELECTROMAGNETIC_COIL.get()) {
                     electromagneticCoils++;
@@ -101,7 +105,6 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
 
     @Override
     public FormationProtocol.FormationResult postcheck(TransmuterMultiblockData structure, Long2ObjectMap<ChunkAccess> chunkMap) {
-        System.out.println("postcheck");
         // 中央3層にブロックが置かれていた場合
         if (!innerStructureValid) {
             return FormationProtocol.FormationResult.fail(Component.literal("中央の3層は空気である必要があります。"));
@@ -114,7 +117,7 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
 
         // 構造が有効な場合、Data側にスキャン結果を反映
         structure.setCoilData(superchargedCoilFound, electromagneticCoils);
-
+        structure.superchargedCoils = new ArrayList<>(superchargedCoilPositions);
         return FormationProtocol.FormationResult.SUCCESS;
     }
 
@@ -123,6 +126,7 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
         electromagneticCoils = 0;
         superchargedCoilFound = false;
         innerStructureValid = true;
+        superchargedCoilPositions.clear();
         cuboid = StructureHelper.fetchCuboid(structure, MIN_BOUNDS, MAX_BOUNDS, EnumSet.allOf(VoxelCuboid.CuboidSide.class), 500);
         if (cuboid == null){
             System.out.println("[TransmuterValidator] precheck() 失敗: 直方体(Cuboid)が形成できませんでした。枠組みが閉じていないか、サイズが範囲外(5x7x5 ～ 17x18x17)です。");

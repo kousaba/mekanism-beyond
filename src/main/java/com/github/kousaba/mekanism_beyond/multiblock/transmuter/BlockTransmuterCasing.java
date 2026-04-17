@@ -21,18 +21,7 @@ public class BlockTransmuterCasing<TILE extends TileEntityTransmuterCasing>
 
     public BlockTransmuterCasing(BlockTypeTile<TILE> type) {
         super(type, BlockBehaviour.Properties.of().strength(5.0F, 6.0F).requiresCorrectToolForDrops());
-        System.out.println("Block 属性: " + this.type.getAll());
     }
-
-    @Override
-    public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state,
-                            @Nullable LivingEntity placer, @NotNull ItemStack stack) {
-        super.setPlacedBy(world, pos, state, placer, stack);
-        if (!world.isClientSide && placer instanceof Player player) {
-            player.sendSystemMessage(Component.literal("Pos " + pos.toShortString() + " に設置されました！"));
-        }
-    }
-
 
     @NotNull
     @Override
