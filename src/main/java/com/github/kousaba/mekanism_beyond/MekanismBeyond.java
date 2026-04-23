@@ -1,12 +1,12 @@
 package com.github.kousaba.mekanism_beyond;
 
 import com.github.kousaba.mekanism_beyond.datagen.DataGenerators;
+import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.AdvancedFusionReactorMultiblockData;
+import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.AdvancedFusionValidator;
+import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterBuilder;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterMultiblockData;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterValidator;
-import com.github.kousaba.mekanism_beyond.registration.MekBeyondBlocks;
-import com.github.kousaba.mekanism_beyond.registration.MekBeyondChemicals;
-import com.github.kousaba.mekanism_beyond.registration.MekBeyondContainerTypes;
-import com.github.kousaba.mekanism_beyond.registration.MekBeyondTileEntities;
+import com.github.kousaba.mekanism_beyond.registration.*;
 import com.mojang.logging.LogUtils;
 import mekanism.common.lib.multiblock.MultiblockCache;
 import mekanism.common.lib.multiblock.MultiblockManager;
@@ -20,6 +20,8 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -29,10 +31,12 @@ import org.slf4j.Logger;
 @Mod(MekanismBeyond.MODID)
 public class MekanismBeyond {
     public static final String MODID = "mekanism_beyond";
-    private static final Logger LOGGER = LogUtils.getLogger();
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredItem<Item> NANO_ALLOY = ITEMS.registerSimpleItem("nano_alloy", new Item.Properties());
     public static final MultiblockManager<TransmuterMultiblockData> transmuterManager = new MultiblockManager("transmuter", MultiblockCache::new, TransmuterValidator::new);
+    public static final MultiblockManager<AdvancedFusionReactorMultiblockData> advancedFusionManager =
+            new MultiblockManager<>("advanced_fusion_reactor", MultiblockCache::new, AdvancedFusionValidator::new);
+    private static final Logger LOGGER = LogUtils.getLogger();
     // --- ブロック登録 (シンボルを解決) ---
 
 
@@ -42,6 +46,9 @@ public class MekanismBeyond {
         MekBeyondTileEntities.TILE_ENTITY_TYPES.register(modEventBus);
         MekBeyondContainerTypes.CONTAINER_TYPES.register(modEventBus);
         MekBeyondChemicals.CHEMICALS.register(modEventBus);
+        MekBeyondRecipeTypes.SERIALIZERS.register(modEventBus);
+        MekBeyondRecipeTypes.TYPES.register(modEventBus);
+        NeoForge.EVENT_BUS.addListener(this::registerCommands);
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(ClientEvent::init);
         System.out.println("Force Initializing Manager: " + transmuterManager);
@@ -59,12 +66,25 @@ public class MekanismBeyond {
         Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 
+    public void registerCommands(RegisterCommandsEvent event) {
+        event.getDispatcher().register(
+                net.minecraft.commands.Commands.literal("beyondbuild")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(context -> {
+                            net.minecraft.core.BlockPos pos = net.minecraft.core.BlockPos.containing(context.getSource().getPosition());
+                            new TransmuterBuilder().build(context.getSource().getLevel(), pos, false);
+                            return 1;
+                        })
+        );
+    }
+
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
     }
+
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     public static class ClientModEvents {
@@ -75,4 +95,5 @@ public class MekanismBeyond {
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
     }
+
 }

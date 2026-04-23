@@ -1,6 +1,8 @@
 package com.github.kousaba.mekanism_beyond.registration;
 
 import com.github.kousaba.mekanism_beyond.MekanismBeyond;
+import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.TileEntityAdvancedFusionCasing;
+import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.TileEntityAdvancedFusionPort;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterCasing;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterPort;
 import mekanism.common.capabilities.Capabilities;
@@ -19,6 +21,20 @@ public class MekBeyondTileEntities {
 
     public static final TileEntityTypeRegistryObject<TileEntityTransmuterPort> TRANSMUTER_PORT =
             TILE_ENTITY_TYPES.mekBuilder(MekBeyondBlocks.TRANSMUTER_PORT, TileEntityTransmuterPort::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
+                    .withSimple(Capabilities.CONFIGURABLE)
+                    .build();
+    // ADVANCED FUSION REACTOR
+    public static final TileEntityTypeRegistryObject<TileEntityAdvancedFusionCasing> ADVANCED_FUSION_CASING =
+            TILE_ENTITY_TYPES.mekBuilder(MekBeyondBlocks.ADVANCED_FUSION_CASING, TileEntityAdvancedFusionCasing::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
+                    .withSimple(Capabilities.CONFIGURABLE)
+                    .build();
+
+    public static final TileEntityTypeRegistryObject<TileEntityAdvancedFusionPort> ADVANCED_FUSION_PORT =
+            TILE_ENTITY_TYPES.mekBuilder(MekBeyondBlocks.ADVANCED_FUSION_PORT, TileEntityAdvancedFusionPort::new)
                     .clientTicker(TileEntityMekanism::tickClient)
                     .serverTicker(TileEntityMekanism::tickServer)
                     .withSimple(Capabilities.CONFIGURABLE)

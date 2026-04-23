@@ -15,9 +15,9 @@ public class DataGenerators {
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
 
-        generator.addProvider(event.includeClient(), new MekBeyondBlockStateProvider(packOutput, MekanismBeyond.MODID, event.getExistingFileHelper()));
         generator.addProvider(event.includeServer(), new MekBeyondRecipeProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeClient(), new MekBeyondLanguageProvider(packOutput, MekanismBeyond.MODID, "en_us"));
+        generator.addProvider(event.includeClient(), new MekBeyondBlockStateProvider(packOutput, MekanismBeyond.MODID, event.getExistingFileHelper()));
         generator.addProvider(event.includeClient(), new MekBeyondItemModelProvider(packOutput, MekanismBeyond.MODID, event.getExistingFileHelper()));
     }
 }

@@ -5,19 +5,20 @@ import mekanism.api.AutomationType;
 import mekanism.api.IContentsListener;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Predicate;
 
-public class BeyondVariableCapacityEnergyContainer implements IBeyondEnergyContainer{
-    private double energyBE = 0;
+public class BeyondVariableCapacityEnergyContainer implements IBeyondEnergyContainer {
     private final DoubleSupplier maxEnergyBE;
     @Nullable
     private final IContentsListener listener;
     private final Predicate<AutomationType> canInsert;
     private final Predicate<AutomationType> canExtract;
+    private double energyBE = 0;
+    private double lastUsageBE = 0;
+    private double currentTickUsage = 0;
 
     protected BeyondVariableCapacityEnergyContainer(DoubleSupplier maxEnergyBE, Predicate<AutomationType> canInsert, Predicate<AutomationType> canExtract, @Nullable IContentsListener listener) {
         this.maxEnergyBE = maxEnergyBE;
@@ -25,19 +26,28 @@ public class BeyondVariableCapacityEnergyContainer implements IBeyondEnergyConta
         this.canExtract = canExtract;
         this.listener = listener;
     }
-    public static BeyondVariableCapacityEnergyContainer create(DoubleSupplier maxEnergyBE, @Nullable IContentsListener listener){
+
+    public static BeyondVariableCapacityEnergyContainer create(DoubleSupplier maxEnergyBE, @Nullable IContentsListener listener) {
         return new BeyondVariableCapacityEnergyContainer(maxEnergyBE, type -> true, type -> true, listener);
     }
-    public static BeyondVariableCapacityEnergyContainer input(DoubleSupplier maxEnergyBE, @Nullable IContentsListener listener){
+
+    public static BeyondVariableCapacityEnergyContainer input(DoubleSupplier maxEnergyBE, @Nullable IContentsListener listener) {
         return new BeyondVariableCapacityEnergyContainer(maxEnergyBE, type -> true, type -> type == AutomationType.INTERNAL, listener);
     }
-    public static BeyondVariableCapacityEnergyContainer output(DoubleSupplier maxEnergyBE, @Nullable IContentsListener listener){
+
+    public static BeyondVariableCapacityEnergyContainer output(DoubleSupplier maxEnergyBE, @Nullable IContentsListener listener) {
         return new BeyondVariableCapacityEnergyContainer(maxEnergyBE, type -> type == AutomationType.INTERNAL, type -> true, listener);
     }
 
     @Override
     public double getEnergyBE() {
         return energyBE;
+    }
+
+    @Override
+    public void setEnergyBE(double be) {
+        this.energyBE = Math.max(0, Math.min(be, getMaxEnergyBE()));
+        onContentsChanged();
     }
 
     @Override
@@ -48,12 +58,6 @@ public class BeyondVariableCapacityEnergyContainer implements IBeyondEnergyConta
     @Override
     public long getEnergyFE() {
         return BeyondEnergyUnit.toFE(energyBE);
-    }
-
-    @Override
-    public void setEnergyBE(double be) {
-        this.energyBE = Math.max(0, Math.min(be, getMaxEnergyBE()));
-        onContentsChanged();
     }
 
     // --- IEnergyContainer 互換メソッド (long Joules) ---
@@ -94,20 +98,33 @@ public class BeyondVariableCapacityEnergyContainer implements IBeyondEnergyConta
 
     @Override
     public long extract(long amount, Action action, AutomationType automationType) {
-        // 自動化設定で搬出が許可されていない場合は拒否
         if (!canExtract.test(automationType)) return 0;
-
         if (amount <= 0) return 0;
+
         double outputBE = BeyondEnergyUnit.toBE(amount);
         double toExtractBE = Math.min(energyBE, outputBE);
-
         if (toExtractBE <= 0) return 0;
 
         if (action.execute()) {
             energyBE -= toExtractBE;
+            if (automationType == AutomationType.INTERNAL) {
+                // 計算用のバッファに加算
+                this.currentTickUsage += toExtractBE;
+            }
             onContentsChanged();
         }
         return BeyondEnergyUnit.toJoules(toExtractBE);
+    }
+
+    @Override
+    public boolean useEnergyBE(double be) {
+        // 完全に足りている場合のみ消費
+        if (energyBE < be) return false;
+        energyBE -= be;
+        // 計算用のバッファに加算
+        this.currentTickUsage += be;
+        onContentsChanged();
+        return true;
     }
 
     @Override
@@ -126,5 +143,21 @@ public class BeyondVariableCapacityEnergyContainer implements IBeyondEnergyConta
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         // ロード時に現在の最大容量でクランプ
         this.energyBE = Math.min(nbt.getDouble("energyBE"), getMaxEnergyBE());
+    }
+
+    @Override
+    public double getLastUsageBE() {
+        return lastUsageBE;
+    }
+
+    @Override
+    public void setLastUsageBE(double usage) {
+        this.lastUsageBE = usage;
+    }
+
+    @Override
+    public void updateLastUsage() {
+        this.lastUsageBE = currentTickUsage;
+        this.currentTickUsage = 0;
     }
 }

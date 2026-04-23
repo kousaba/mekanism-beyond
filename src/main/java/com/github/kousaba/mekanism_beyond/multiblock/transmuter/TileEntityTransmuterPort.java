@@ -44,20 +44,34 @@ public class TileEntityTransmuterPort extends TileEntityTransmuterCasing {
     @NotNull
     @Override
     protected IFluidTankHolder getInitialFluidTanks(IContentsListener listener) {
-        return side -> getMultiblock().getFluidTanks(side);
+        return side -> {
+            if (getLevel() == null) {
+                return java.util.Collections.emptyList();
+            }
+            return getMultiblock().getFluidTanks(side);
+        };
     }
 
     @NotNull
     @Override
     protected IEnergyContainerHolder getInitialEnergyContainers(IContentsListener listener) {
-        // マルチブロック本体が持っているバッテリーを外部に繋ぐ
-        return side -> getMultiblock().getEnergyContainers(side);
+        return side -> {
+            if (getLevel() == null) {
+                return java.util.Collections.emptyList();
+            }
+            return getMultiblock().getEnergyContainers(side);
+        };
     }
 
     @NotNull
     @Override
     public IChemicalTankHolder getInitialChemicalTanks(IContentsListener listener) {
-        return side -> getMultiblock().getChemicalTanks(side);
+        return side -> {
+            if (getLevel() == null) {
+                return java.util.Collections.emptyList();
+            }
+            return getMultiblock().getChemicalTanks(side);
+        };
     }
 
     public void addGasTargetCapability(List<MultiblockData.CapabilityOutputTarget<IChemicalHandler>> targets, Direction side) {

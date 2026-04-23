@@ -15,5 +15,10 @@ public class MekBeyondLanguageProvider extends LanguageProvider {
         add("chat.mekanism_beyond.port_mode", "Port Mode: %s");
         add("chat.mekanism_beyond.input", "Input");
         add("chat.mekanism_beyond.output", "Output");
+        add("mekanism_beyond.gui.energy_info", "Beyond Energy Info");
+        add("mekanism_beyond.port_mode.input", "Port Mode: Input (Deuterium)");
+        add("mekanism_beyond.port_mode.coolant", "Port Mode: Coolant (Water)");
+        add("mekanism_beyond.port_mode.neutron", "Port Mode: Output (Neutron)");
+        add("mekanism_beyond.port_mode.output", "Port Mode: Output (Steam)");
     }
 }

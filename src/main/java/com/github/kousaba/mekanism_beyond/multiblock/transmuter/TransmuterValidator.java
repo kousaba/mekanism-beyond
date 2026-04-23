@@ -27,11 +27,6 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
     private boolean innerStructureValid = true;
     private List<BlockPos> superchargedCoilPositions = new ArrayList<>();
 
-    public TransmuterValidator() {
-        super();
-        System.out.println("Validator Constructor");
-    }
-
     @Override
     protected FormationProtocol.CasingType getCasingType(BlockState state) {
         Block block = state.getBlock();
@@ -39,7 +34,7 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
             return FormationProtocol.CasingType.FRAME;
         } else if (block == MekBeyondBlocks.TRANSMUTER_PORT.get()) { // ポート用ブロック
             return FormationProtocol.CasingType.VALVE;
-        } else if (block == MekanismBlocks.STRUCTURAL_GLASS.get()){
+        } else if (block == MekanismBlocks.STRUCTURAL_GLASS.get()) {
             return FormationProtocol.CasingType.OTHER;
         }
         return FormationProtocol.CasingType.INVALID;
@@ -128,7 +123,7 @@ public class TransmuterValidator extends CuboidStructureValidator<TransmuterMult
         innerStructureValid = true;
         superchargedCoilPositions.clear();
         cuboid = StructureHelper.fetchCuboid(structure, MIN_BOUNDS, MAX_BOUNDS, EnumSet.allOf(VoxelCuboid.CuboidSide.class), 500);
-        if (cuboid == null){
+        if (cuboid == null) {
             System.out.println("[TransmuterValidator] precheck() 失敗: 直方体(Cuboid)が形成できませんでした。枠組みが閉じていないか、サイズが範囲外(5x7x5 ～ 17x18x17)です。");
             return false;
         }

@@ -1,11 +1,12 @@
 package com.github.kousaba.mekanism_beyond.client.gui;
 
+import com.github.kousaba.mekanism_beyond.beyond_energy.GuiBeyondEnergyTab;
 import com.github.kousaba.mekanism_beyond.beyond_energy.GuiBeyondVerticalPowerBar;
+import com.github.kousaba.mekanism_beyond.beyond_energy.IBeyondEnergyContainer;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterCasing;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterMultiblockData;
 import mekanism.client.gui.GuiMekanism;
 import mekanism.client.gui.element.GuiInnerScreen;
-import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
 import mekanism.client.gui.element.gauge.GaugeType;
 import mekanism.client.gui.element.gauge.GuiChemicalGauge;
 import mekanism.client.gui.element.gauge.GuiFluidGauge;
@@ -38,12 +39,11 @@ public class GuiTransmuter extends GuiMekanism<MekanismTileContainer<TileEntityT
 
         // 2. 中央: 液晶画面 (幅を100に広げ、中心付近に配置)
         addRenderableWidget(new GuiInnerScreen(this, 35, 15, 100, 60, () -> {
-            double speedMultiplier = 1.0 + (multiblock.getCoilCount() * TransmuterMultiblockData.COIL_SPEED_BONUS);
             return List.of(
                     Component.literal("Active: " + multiblock.isActive()),
                     Component.literal("Coils: " + multiblock.getCoilCount()),
                     Component.literal("Prob: " + String.format("%.2f%%", multiblock.getProbability() * 100)),
-                    Component.literal("Spd: " + String.format("%.1fx", speedMultiplier)),
+                    Component.literal("Spd: " + String.format("%.1fx", multiblock.lastSpeedMultiplier)),
                     Component.literal("Use: " + multiblock.currentWaterUsage + "mB/t")
             );
         }));
@@ -58,6 +58,11 @@ public class GuiTransmuter extends GuiMekanism<MekanismTileContainer<TileEntityT
         addRenderableWidget(new GuiChemicalGauge(
                 () -> multiblock.uraniumWaterTank, () -> List.of(multiblock.uraniumWaterTank),
                 GaugeType.STANDARD, this, 162, 13
+        ));
+
+        addRenderableWidget(new GuiBeyondEnergyTab(this,
+                (IBeyondEnergyContainer) multiblock.energyContainer,
+                () -> multiblock.isActive() ? multiblock.currentEnergyUsage : 0.0
         ));
 
         // 5. 一番右端: 電力バー (Input)
