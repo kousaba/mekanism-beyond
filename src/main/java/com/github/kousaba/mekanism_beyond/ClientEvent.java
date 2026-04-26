@@ -50,6 +50,5 @@ public class ClientEvent {
         event.registerBlockEntityRenderer(MekBeyondTileEntities.ADVANCED_FUSION_PORT.get(), RenderAdvancedFusionReactor::new);
         event.registerBlockEntityRenderer(MekBeyondTileEntities.BEYOND_FUSION_CASING.get(), RenderPBFusionReactor::new);
         event.registerBlockEntityRenderer(MekBeyondTileEntities.BEYOND_FUSION_PORT.get(), RenderPBFusionReactor::new);
-        event.registerBlockEntityRenderer(MekBeyondTileEntities.MAGNETIC_STABILIZATION_COIL.get(), RenderPBFusionReactor::new);
     }
 }
