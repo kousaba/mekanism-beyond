@@ -1,4 +1,4 @@
-package com.github.kousaba.mekanism_beyond.client.gui.tab;
+package com.github.kousaba.mekanism_beyond.client.gui.tab.advanced_fusion;
 
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.TileEntityAdvancedFusionCasing;
 import mekanism.client.gui.element.gauge.GaugeType;

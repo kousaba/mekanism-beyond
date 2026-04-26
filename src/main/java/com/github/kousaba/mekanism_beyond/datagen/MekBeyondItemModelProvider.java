@@ -17,5 +17,8 @@ public class MekBeyondItemModelProvider extends ItemModelProvider {
         withExistingParent("transmuter_port", modLoc("block/transmuter_port"));
         withExistingParent("advanced_fusion_casing", modLoc("block/advanced_fusion_casing"));
         withExistingParent("advanced_fusion_port", modLoc("block/advanced_fusion_port"));
+        withExistingParent("magnetic_stabilization_coil", modLoc("block/magnetic_stabilization_coil"));
+        withExistingParent("beyond_fusion_casing", modLoc("block/beyond_fusion_casing"));
+        withExistingParent("beyond_fusion_port", modLoc("block/beyond_fusion_port"));
     }
 }

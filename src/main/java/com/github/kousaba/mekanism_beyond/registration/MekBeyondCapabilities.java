@@ -48,6 +48,25 @@ public class MekBeyondCapabilities {
                     }
                 }
         );
+        event.registerBlockEntity(
+                mekanism.common.capabilities.Capabilities.LASER_RECEPTOR,
+                MekBeyondTileEntities.BEYOND_FUSION_PORT.get(),
+                (tile, side) -> new ILaserReceptor() {
+                    @Override
+                    public void receiveLaserEnergy(long energy) {
+                        var multiblock = tile.getMultiblock();
+                        if (multiblock.isFormed()) {
+                            multiblock.addTemperatureFromEnergyInput(energy);
+                        }
+                    }
+
+                    @Override
+                    public boolean canLasersDig() {
+                        return false;
+                    }
+                }
+        );
+
 
         // 必要であれば Casing にも同様に登録すれば、壁のどこにレーザーを当てても熱くなります
         event.registerBlockEntity(
@@ -68,6 +87,6 @@ public class MekBeyondCapabilities {
                     }
                 }
         );
-        
+
     }
 }

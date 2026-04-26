@@ -2,6 +2,7 @@ package com.github.kousaba.mekanism_beyond.network;
 
 
 import com.github.kousaba.mekanism_beyond.MekanismBeyond;
+import com.github.kousaba.mekanism_beyond.client.gui.tab.beyond_fusion.PacketBeyondFusionGuiTab;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -26,6 +27,18 @@ public class MekBeyondNetworking {
         registrar.playToServer(
                 PacketAdvancedFusionRate.TYPE,
                 PacketAdvancedFusionRate.STREAM_CODEC,
+                (packet, context) -> packet.handle(context)
+        );
+
+        registrar.playToServer(
+                PacketBeyondFusionGuiTab.TYPE,
+                PacketBeyondFusionGuiTab.STREAM_CODEC,
+                (packet, context) -> packet.handle(context)
+        );
+
+        registrar.playToServer(
+                PacketBeyondFusionRate.TYPE,
+                PacketBeyondFusionRate.STREAM_CODEC,
                 (packet, context) -> packet.handle(context)
         );
 

@@ -3,6 +3,9 @@ package com.github.kousaba.mekanism_beyond;
 import com.github.kousaba.mekanism_beyond.datagen.DataGenerators;
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.AdvancedFusionReactorMultiblockData;
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.AdvancedFusionValidator;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.PBFusionBuilder;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.PBFusionReactorMultiblockData;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.PBFusionValidator;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterBuilder;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterMultiblockData;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TransmuterValidator;
@@ -11,6 +14,8 @@ import com.mojang.logging.LogUtils;
 import mekanism.common.lib.multiblock.MultiblockCache;
 import mekanism.common.lib.multiblock.MultiblockManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
@@ -36,6 +41,8 @@ public class MekanismBeyond {
     public static final MultiblockManager<TransmuterMultiblockData> transmuterManager = new MultiblockManager("transmuter", MultiblockCache::new, TransmuterValidator::new);
     public static final MultiblockManager<AdvancedFusionReactorMultiblockData> advancedFusionManager =
             new MultiblockManager<>("advanced_fusion_reactor", MultiblockCache::new, AdvancedFusionValidator::new);
+    public static final MultiblockManager<PBFusionReactorMultiblockData> pbFusionManager =
+            new MultiblockManager<>("pb_fusion_reactor", MultiblockCache::new, PBFusionValidator::new);
     private static final Logger LOGGER = LogUtils.getLogger();
     // --- ブロック登録 (シンボルを解決) ---
 
@@ -68,13 +75,24 @@ public class MekanismBeyond {
 
     public void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(
-                net.minecraft.commands.Commands.literal("beyondbuild")
+                Commands.literal("mekbeyond")
                         .requires(source -> source.hasPermission(2))
-                        .executes(context -> {
-                            net.minecraft.core.BlockPos pos = net.minecraft.core.BlockPos.containing(context.getSource().getPosition());
-                            new TransmuterBuilder().build(context.getSource().getLevel(), pos, false);
-                            return 1;
-                        })
+                        .then(Commands.literal("build")
+                                .then(Commands.literal("transmuter")
+                                        .executes(context -> {
+                                            BlockPos pos = BlockPos.containing(context.getSource().getPosition());
+                                            new TransmuterBuilder().build(context.getSource().getLevel(), pos, false);
+                                            return 1;
+                                        })
+                                )
+                                .then(Commands.literal("pbfusion")
+                                        .executes(context -> {
+                                            BlockPos pos = BlockPos.containing(context.getSource().getPosition());
+                                            new PBFusionBuilder().build(context.getSource().getLevel(), pos, false);
+                                            return 1;
+                                        })
+                                )
+                        )
         );
     }
 

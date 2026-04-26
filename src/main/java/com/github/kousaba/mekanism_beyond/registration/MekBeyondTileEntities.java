@@ -3,6 +3,9 @@ package com.github.kousaba.mekanism_beyond.registration;
 import com.github.kousaba.mekanism_beyond.MekanismBeyond;
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.TileEntityAdvancedFusionCasing;
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.TileEntityAdvancedFusionPort;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.TileEntityBeyondFusionCasing;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.TileEntityBeyondFusionPort;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.TileEntityMagneticStabilizationCoil;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterCasing;
 import com.github.kousaba.mekanism_beyond.multiblock.transmuter.TileEntityTransmuterPort;
 import mekanism.common.capabilities.Capabilities;
@@ -38,5 +41,24 @@ public class MekBeyondTileEntities {
                     .clientTicker(TileEntityMekanism::tickClient)
                     .serverTicker(TileEntityMekanism::tickServer)
                     .withSimple(Capabilities.CONFIGURABLE)
+                    .build();
+    // PB FUSION REACTOR
+    public static final TileEntityTypeRegistryObject<TileEntityBeyondFusionCasing> BEYOND_FUSION_CASING =
+            TILE_ENTITY_TYPES.mekBuilder(MekBeyondBlocks.BEYOND_FUSION_CASING, TileEntityBeyondFusionCasing::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
+                    .withSimple(Capabilities.CONFIGURABLE)
+                    .build();
+
+    public static final TileEntityTypeRegistryObject<TileEntityBeyondFusionPort> BEYOND_FUSION_PORT =
+            TILE_ENTITY_TYPES.mekBuilder(MekBeyondBlocks.BEYOND_FUSION_PORT, TileEntityBeyondFusionPort::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
+                    .withSimple(Capabilities.CONFIGURABLE)
+                    .build();
+    public static final TileEntityTypeRegistryObject<TileEntityMagneticStabilizationCoil> MAGNETIC_STABILIZATION_COIL =
+            TILE_ENTITY_TYPES.mekBuilder(MekBeyondBlocks.MAGNETIC_STABILIZATION_COIL, TileEntityMagneticStabilizationCoil::new)
+                    .clientTicker(TileEntityMekanism::tickClient)
+                    .serverTicker(TileEntityMekanism::tickServer)
                     .build();
 }

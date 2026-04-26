@@ -2,6 +2,8 @@ package com.github.kousaba.mekanism_beyond.datagen;
 
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.AdvancedFusionPortMode;
 import com.github.kousaba.mekanism_beyond.multiblock.advanced_fusion_reactor.BlockAdvancedFusionPort;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.BeyondFusionPortMode;
+import com.github.kousaba.mekanism_beyond.multiblock.pb_fusion_reactor.BlockBeyondFusionPort;
 import com.github.kousaba.mekanism_beyond.registration.MekBeyondBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -21,6 +23,8 @@ public class MekBeyondBlockStateProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         simpleBlock(MekBeyondBlocks.TRANSMUTER_CASING.get());
         simpleBlock(MekBeyondBlocks.ADVANCED_FUSION_CASING.get());
+        simpleBlock(MekBeyondBlocks.BEYOND_FUSION_CASING.get());
+        simpleBlock(MekBeyondBlocks.MAGNETIC_STABILIZATION_COIL.get());
 
         // Mekanismの親モデルのパスを定義
         ResourceLocation templatePath = ResourceLocation.fromNamespaceAndPath("mekanism", "block/template/cube_all_led");
@@ -67,6 +71,17 @@ public class MekBeyondBlockStateProvider extends BlockStateProvider {
                         case COOLANT -> portCoolantModel;
                         case NEUTRON -> portNeutronModel;
                         case OUTPUT -> portOutputModel;
+                    };
+                    return ConfiguredModel.builder().modelFile(file).build();
+                });
+        ModelFile beyondReactorPortInputModel = models().cubeAll("beyond_fusion_port", modLoc("block/beyond_fusion_port"));
+        ModelFile beyondReactorPortOutputModel = models().cubeAll("beyond_fusion_port_output", modLoc("block/beyond_fusion_port_output"));
+        getVariantBuilder(MekBeyondBlocks.BEYOND_FUSION_PORT.get())
+                .forAllStates(state -> {
+                    BeyondFusionPortMode mode = state.getValue(BlockBeyondFusionPort.MODE);
+                    ModelFile file = switch (mode) {
+                        case INPUT -> beyondReactorPortInputModel;
+                        case OUTPUT -> beyondReactorPortOutputModel;
                     };
                     return ConfiguredModel.builder().modelFile(file).build();
                 });

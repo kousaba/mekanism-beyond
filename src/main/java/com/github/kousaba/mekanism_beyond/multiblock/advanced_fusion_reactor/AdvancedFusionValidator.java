@@ -81,7 +81,7 @@ public class AdvancedFusionValidator extends CuboidStructureValidator<AdvancedFu
     @Override
     public boolean precheck() {
         // 指定サイズ(7x7x7)の直方体を探す
-        this.cuboid = StructureHelper.fetchCuboid(this.structure, BOUNDS, BOUNDS, EnumSet.allOf(VoxelCuboid.CuboidSide.class), 72);
+        this.cuboid = StructureHelper.fetchCuboid(this.structure, BOUNDS, BOUNDS, EnumSet.allOf(VoxelCuboid.CuboidSide.class), 200);
         return this.cuboid != null;
     }
 
